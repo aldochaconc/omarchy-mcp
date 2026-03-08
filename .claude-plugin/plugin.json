@@ -1,7 +1,7 @@
 {
   "name": "omarchy-mcp",
   "version": "1.0.0",
-  "description": "MCP server exposing the Omarchy Manual documentation as searchable tools",
+  "description": "Unofficial MCP server exposing the Omarchy Manual documentation as searchable tools. Not affiliated with or endorsed by the Omarchy project.",
   "author": {
     "name": "Aldo W. Chacón",
     "url": "https://github.com/aldochaconc"

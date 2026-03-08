@@ -1,13 +1,13 @@
 {
-  "name": "omarchy-mcp-dev",
-  "description": "Dev marketplace for omarchy-mcp plugin",
+  "name": "omarchy-mcp",
+  "description": "Unofficial MCP server for the Omarchy Manual documentation",
   "owner": {
     "name": "Aldo W. Chacón"
   },
   "plugins": [
     {
       "name": "omarchy-mcp",
-      "description": "MCP server for the Omarchy Manual documentation",
+      "description": "Unofficial MCP server for the Omarchy Manual — not affiliated with or endorsed by the Omarchy project",
       "version": "1.0.0",
       "source": "./",
       "author": {
