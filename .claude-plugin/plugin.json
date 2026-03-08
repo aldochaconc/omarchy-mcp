@@ -1,0 +1,19 @@
+{
+  "name": "omarchy-mcp",
+  "version": "1.0.0",
+  "description": "MCP server exposing the Omarchy Manual documentation as searchable tools",
+  "author": {
+    "name": "Aldo W. Chacón",
+    "url": "https://github.com/aldochaconc"
+  },
+  "license": "MIT",
+  "mcpServers": {
+    "omarchy-docs": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/server/dist/index.js"],
+      "env": {
+        "OMARCHY_CACHE_DIR": "${CLAUDE_PLUGIN_ROOT}/server/.cache"
+      }
+    }
+  }
+}

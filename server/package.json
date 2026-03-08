@@ -1,0 +1,24 @@
+{
+  "name": "omarchy-docs-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for Omarchy documentation",
+  "author": "Aldo W. Chacón <aldochaconc>",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "dev": "ts-node src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "turndown": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/turndown": "^5.0.5",
+    "esbuild": "^0.27.3",
+    "typescript": "^5.7.0"
+  },
+  "type": "module"
+}
