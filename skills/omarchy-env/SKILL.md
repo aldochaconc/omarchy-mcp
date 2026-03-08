@@ -33,21 +33,17 @@ digraph classify {
     "omarchy-theme skill" [shape=box, style=filled, fillcolor="#d4edda"];
     "Is it Hyprland ecosystem?" [shape=diamond];
     "omarchy-hyprland skill" [shape=box, style=filled, fillcolor="#d4edda"];
-    "Is it Waybar?" [shape=diamond];
-    "omarchy-waybar skill" [shape=box, style=filled, fillcolor="#d4edda"];
-    "Is it another Omarchy component?" [shape=diamond];
-    "Edit ~/.config/<app>/" [shape=box];
+    "Is it an Omarchy-managed component?" [shape=diamond];
+    "See component table below" [shape=box, style=filled, fillcolor="#d4edda"];
     "Standard config (non-Omarchy)" [shape=box];
 
     "User requests config change" -> "Is it visual/style/color?";
     "Is it visual/style/color?" -> "omarchy-theme skill" [label="yes"];
     "Is it visual/style/color?" -> "Is it Hyprland ecosystem?" [label="no"];
     "Is it Hyprland ecosystem?" -> "omarchy-hyprland skill" [label="yes"];
-    "Is it Hyprland ecosystem?" -> "Is it Waybar?" [label="no"];
-    "Is it Waybar?" -> "omarchy-waybar skill" [label="yes"];
-    "Is it Waybar?" -> "Is it another Omarchy component?" [label="no"];
-    "Is it another Omarchy component?" -> "Edit ~/.config/<app>/" [label="yes"];
-    "Is it another Omarchy component?" -> "Standard config (non-Omarchy)" [label="no"];
+    "Is it Hyprland ecosystem?" -> "Is it an Omarchy-managed component?" [label="no"];
+    "Is it an Omarchy-managed component?" -> "See component table below" [label="yes"];
+    "Is it an Omarchy-managed component?" -> "Standard config (non-Omarchy)" [label="no"];
 }
 ```
 
@@ -57,11 +53,10 @@ digraph classify {
 |----------|---------|----------|
 | **A — Theme** | Colors, backgrounds, component styling, border colors, terminal colors, notification colors, bar opacity, accent color | `omarchy-theme` skill |
 | **B — Hyprland** | Keybindings, monitors, input, window rules, animations, blur, opacity, tearing, idle, lock, sunset, autostart, env vars | `omarchy-hyprland` skill |
-| **C — Waybar** | Bar modules, layout, module order, indicators, clock format, battery display, bar position/height | `omarchy-waybar` skill |
-| **D — Other Omarchy** | Walker behavior, mako behavior (not colors), swayosd behavior (not colors) | Edit `~/.config/<app>/` directly |
-| **E — Non-Omarchy** | Neovim plugins, shell, git, tmux, Docker, editors | Standard config location |
+| **C — Omarchy component** | Waybar modules/layout, Walker behavior, Mako behavior, SwayOSD behavior, terminal behavior, btop config | See Component-to-File Mapping table below |
+| **D — Non-Omarchy** | Neovim plugins, shell, git, tmux, Docker, editors | Standard config location |
 
-**Gray zone — Waybar colors**: This is Category A (theme), NOT Category C. Waybar colors live in the theme's `waybar.css`, not in `~/.config/waybar/style.css`.
+**Gray zone — component COLORS vs component BEHAVIOR**: If the change is about colors/styling, it's Category A (theme) regardless of which component. If it's about behavior/layout/modules, it's Category C. Example: Waybar bar opacity = theme. Waybar module order = Category C.
 
 ## Step 2: Check for Alternatives
 
@@ -73,21 +68,30 @@ Before editing any component config, check if multiple apps serve the same funct
 
 ### Component-to-File Mapping
 
-| Component | Config file(s) | Notes |
-|-----------|----------------|-------|
-| Hyprland core | `~/.config/hypr/*.conf` | See `omarchy-hyprland` for split |
-| Hyprlock | `~/.config/hypr/hyprlock.conf` | Sources theme colors at top |
-| Hypridle | `~/.config/hypr/hypridle.conf` | No theme dependency |
-| Hyprsunset | `~/.config/hypr/hyprsunset.conf` | No theme dependency |
-| Waybar structure | `~/.config/waybar/config.jsonc` | Modules, order, settings |
-| Waybar layout CSS | `~/.config/waybar/style.css` | Fonts, spacing, sizing |
-| Waybar colors | Theme's `waybar.css` | Via `omarchy-theme` skill |
-| Walker | `~/.config/walker/config.toml` | Behavior config |
-| Walker colors | Theme's `walker.css` | Via `omarchy-theme` skill |
-| Mako behavior | `~/.config/mako/config` | Check if symlink first |
-| Mako colors | Theme's `mako.ini` | Via `omarchy-theme` skill |
-| SwayOSD colors | Theme's `swayosd.css` | Via `omarchy-theme` skill |
-| Terminal colors | Theme's `<terminal>.toml/conf` | Via `omarchy-theme` skill |
+| Component | Behavior config | Color/style config | Notes |
+|-----------|----------------|-------------------|-------|
+| **Hyprland** | `~/.config/hypr/*.conf` | Theme's `hyprland.conf` | See `omarchy-hyprland` skill for the config chain |
+| **Hyprlock** | `~/.config/hypr/hyprlock.conf` | Theme's `hyprlock.conf` | Sources theme colors at top of file |
+| **Hypridle** | `~/.config/hypr/hypridle.conf` | — | No theme dependency |
+| **Hyprsunset** | `~/.config/hypr/hyprsunset.conf` | — | No theme dependency |
+| **Waybar** | `config.jsonc` (modules, order, settings) + `style.css` (fonts, spacing, sizing) | Theme's `waybar.css` | **Split-layer warning below** |
+| **Walker** | `~/.config/walker/config.toml` | Theme's `walker.css` | Search providers, behavior |
+| **Mako** | `~/.config/mako/config` | Theme's `mako.ini` | Check `readlink -f` first — may be symlink |
+| **SwayOSD** | System config | Theme's `swayosd.css` | Behavior mostly via CLI flags |
+| **Terminals** | `~/.config/<terminal>/` per terminal | Theme's `alacritty.toml`, `ghostty.conf`, `kitty.conf` | Only Omarchy-default terminals get theme integration |
+| **btop** | `~/.config/btop/btop.conf` | Theme's `btop.theme` | Theme sets color scheme |
+
+All "Theme's X" entries are at `~/.config/omarchy/themes/$THEME_SLUG/X` — use `omarchy-theme` skill to edit them.
+
+### Waybar Split-Layer Warning
+
+Waybar is the most error-prone component because its config spans **3 files in 2 ownership domains**:
+
+1. **Theme's `waybar.css`** — Color definitions (`@define-color`), bar background opacity. Managed by theme system.
+2. **`~/.config/waybar/style.css`** — Font, spacing, sizing. **Line 1 imports theme colors** via `@import`. NEVER remove this import. NEVER put color changes here.
+3. **`~/.config/waybar/config.jsonc`** — Modules, order, position, height, module settings.
+
+Decision: colors/opacity → `omarchy-theme` skill. Fonts/spacing → `style.css`. Modules/structure → `config.jsonc`.
 
 ### Symlink Detection
 

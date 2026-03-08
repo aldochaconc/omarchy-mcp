@@ -41,13 +41,14 @@ ls ~/.config/omarchy/current/theme/
 - User can override templates at `~/.config/omarchy/themed/*.tpl`
 - Placeholders from `colors.toml`:
 
-| Placeholder | Output | Example |
+| Placeholder | Output | Example (if accent = `#aabbcc`) |
 |-------------|--------|---------|
-| `{{ key }}` | Raw value | `#7e9cd8` |
-| `{{ key_strip }}` | Hex without `#` | `7e9cd8` |
-| `{{ key_rgb }}` | Decimal R,G,B | `126, 156, 216` |
+| `{{ accent }}` | Raw value | `#aabbcc` |
+| `{{ accent_strip }}` | Hex without `#` | `aabbcc` |
+| `{{ accent_rgb }}` | Decimal R,G,B | `170, 187, 204` |
 
 - Available keys: `accent`, `cursor`, `foreground`, `background`, `selection_foreground`, `selection_background`, `color0`–`color15`
+- **ALWAYS read the user's actual `colors.toml`** to get real values. Never assume or reuse example colors.
 
 ## What to Edit — Decision Tree
 
